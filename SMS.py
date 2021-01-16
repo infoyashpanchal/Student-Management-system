@@ -2,27 +2,54 @@ from sqlite3 import *
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter.scrolledtext import *
+import re
 
-# ======= Button functions ===========================
-# ================== ADD window ======================
+# ================================= Button functions =======================================================
+#
+# ========================================= ADD window ======================================
+
+
 def openadd():
     root.withdraw()
     add.deiconify()
 
+
 def saveadd():
     con = None
     try:
-        con = connect("SMS.db")
-        cursor = con.cursor()
-        sql = "INSERT INTO student values('%d', '%s', '%d');"
-        rno = int(add_entRNO.get())
+        rno = add_entRNO.get()
         name = add_entNAME.get()
-        marks = int(add_entMARKS.get())
-        cursor.execute(sql % (rno, name, marks))
-        con.commit()
-        showinfo("Success", "Student Entery added Successfully!")
+        alpha = re.compile("^[a-zA-Z ]+$")
+        marks = add_entMARKS.get()
+        if (rno == '') or (name == '') or (marks == ''):
+            showerror("Error", "Some fields are Empty!")
+        else:
+            rno = int(rno)
+            marks = int(marks)
+            if rno < 0:
+                showerror("Error", "Roll number cannot be negative!")
+            elif not alpha.match(name):
+                showerror(
+                    "Error", "Name must be a string!\n(no special characters)")
+            elif len(name) < 2:
+                showerror("Error", "Please enter a valid Name")
+            elif marks < 0 or marks > 100:
+                showerror("Error", "Marks should be in range of 0-100")
+            else:
+                con = connect("SMS.db")
+                cursor = con.cursor()
+                sql = "INSERT INTO student values('%d', '%s', '%d');"
+                cursor.execute(sql % (rno, name, marks))
+                con.commit()
+                showinfo("Success", "Student Entery added Successfully!")
+    except ValueError:
+        showerror("Error", "Roll number and Marks\nshould be a number")
+        con.rollback()
+    except IntegrityError:
+        showerror("Error", "Roll number already exists")
+        con.rollback()
     except Exception as e:
-        showerror("Error",e)
+        showerror("Error", e)
         con.rollback()
     finally:
         if con is not None:
@@ -32,11 +59,14 @@ def saveadd():
             add_entMARKS.delete(0, END)
             add_entRNO.focus()
 
+
 def closeadd():
     add.withdraw()
     root.deiconify()
 
-# ================== VIEW window ======================
+# ==================================== VIEW window ======================================
+
+
 def openview():
     root.withdraw()
     view.deiconify()
@@ -54,47 +84,166 @@ def openview():
             info += "\n>  {}\t\t{}\t\t{}".format(d[0], d[1], d[2])
         view_DISPLAY.insert(INSERT, info)
     except Exception as e:
-        showerror("Error",e)
+        showerror("Error", e)
         con.rollback()
     finally:
         if con is not None:
             con.close()
 
+
 def closeview():
     view.withdraw()
     root.deiconify()
 
-# ================== UPDATE window ======================
+# ======================================= UPDATE window ================================
+
+
 def openupdate():
     root.withdraw()
     update.deiconify()
+
+
+def saveupdate():
+    con = None
+    con1 = None
+    try:
+        # ============ getting existing roll numbers =====================
+        con1 = connect("SMS.db")
+        cursor1 = con1.cursor()
+        sql = "SELECT rno FROM student;"
+        cursor1.execute(sql)
+        con1.commit()
+        data = cursor1.fetchall()
+        rno_list = []
+        for x in data:
+            rno_list.append(x[0])
+        if con1 is not None:
+            con1.close()
+
+    # ============= Validation of the data ===========================
+        rno = update_entRNO.get()
+        name = update_entNAME.get()
+        # variable alpha is the required set of "alphabests" and "space" that a name can contain
+        alpha = re.compile("^[a-zA-Z ]+$")
+        marks = update_entMARKS.get()
+
+        if (rno == '') or (name == '') or (marks == ''):
+            showerror("Error", "Some fields are Empty!")
+        else:
+            rno = int(rno)
+            marks = int(marks)
+            if rno < 0:
+                showerror("Error", "Roll number cannot be negative!")
+            elif not alpha.match(name):
+                showerror(
+                    "Error", "Name must be a string!\n(no special characters)")
+            elif rno not in rno_list:
+                showerror("Error", "Roll number does not exists!")
+            elif len(name) < 2:
+                showerror("Error", "Please enter a valid Name")
+            elif marks < 0 or marks > 100:
+                showerror("Error", "Marks should be in range of 0-100")
+            else:
+                con = connect("SMS.db")
+                cursor = con.cursor()
+                sql = """UPDATE student
+                    SET name = '%s', marks = '%d'
+                    WHERE rno = '%d';"""
+                cursor.execute(sql % (name, marks, rno))
+                con.commit()
+                showinfo("Success", "Student Entery added Successfully!")
+    except ValueError:
+        showerror("Error", "Roll number and Marks\nshould be a number")
+        con.rollback()
+    except Exception as e:
+        showerror("Error", e)
+        con.rollback()
+    finally:
+        if con is not None:
+            con.close()
+            update_entRNO.delete(0, END)
+            update_entNAME.delete(0, END)
+            update_entMARKS.delete(0, END)
+            update_entRNO.focus()
+
 
 def closeupdate():
     update.withdraw()
     root.deiconify()
 
 # ================== DELETE window ======================
+
+
 def opendelete():
     root.withdraw()
     delete.deiconify()
+
+
+def deletedata():
+    con = None
+    con1 = None
+    try:
+        # ======= Getting already existing roll number ===========
+        con1 = connect("SMS.db")
+        cursor1 = con1.cursor()
+        sql = "SELECT rno FROM student;"
+        cursor1.execute(sql)
+        con1.commit()
+        data = cursor1.fetchall()
+        rno_list = []
+        for x in data:
+            rno_list.append(x[0])
+        # print(rno_list)
+        # print(data)
+        if con1 is not None:
+            con1.close()
+    # ====== validation of data ===========================
+        rno = delete_entRNO.get()
+        if rno == '':
+            showerror("Error", "Please enter a Roll number!")
+        else:
+            rno = int(rno)
+            if rno not in rno_list:
+                showerror("Error", "Roll number does not exists!")
+            else:
+                con = connect("SMS.db")
+                cursor = con.cursor()
+                sql = "DELETE FROM student WHERE rno = '%d';"
+                cursor.execute(sql % (rno))
+                con.commit()
+                showinfo("Success", "Student Deleted Successfully!")
+    except ValueError:
+        showerror("Error", "Roll number must be a positive integer")
+        con.rollback()
+    finally:
+        if con is not None:
+            con.close()
+            delete_entRNO.delete(0, END)
+            delete_entRNO.focus()
+
 
 def closedelete():
     delete.withdraw()
     root.deiconify()
 
 # ================= DataBase Creation ========================
+
+
 def createtable():
     con = None
     try:
         con = connect("SMS.db")
         cursor = con.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS student(rno int primary key, name var(30), marks int(3));")
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS student(rno int primary key, name var(30), marks int(3));")
         cursor.commit()
     except Exception:
         con.rollback()
     finally:
         if con is not None:
             con.close()
+
+
 createtable()
 
 # ================= GUI Creation ===============================
@@ -107,13 +256,13 @@ btnADD = Button(root, text = "Add", width = 10, font = ('times new roman', 18, '
 btnVIEW = Button(root, text = "View", width = 10, font = ('times new roman', 18, 'bold'), command = openview)
 btnUPDATE = Button(root, text = "Update", width = 10, font = ('times new roman', 18, 'bold'), command = openupdate)
 btnDELETE = Button(root, text = "Delete", width = 10, font = ('times new roman', 18, 'bold'), command = opendelete)
-btnChart = Button(root, text = "Charts", width = 10, font = ('times new roman', 18, 'bold'))
+btnChart = Button(root, text = "Charts", width = 10, font=('times new roman', 18, 'bold'))
 
 btnADD.pack(pady = 10)
 btnVIEW.pack(pady = 10)
 btnUPDATE.pack(pady = 10)
 btnDELETE.pack(pady = 10)
-btnChart.pack(pady=10)
+btnChart.pack(pady = 10)
 
 # ================== Add window ===============================
 add = Toplevel(root)
@@ -141,11 +290,11 @@ add_btnBACK.pack(pady = 10)
 add.withdraw()
 # ================== View window ===============================
 view = Toplevel(root)
-view.geometry("800x400+300+200")
+view.geometry("650x400+300+200")
 view.title("View Student")
 
-view_DISPLAY = ScrolledText(view, height = 15, width = 60, font = ("times new roman", 15, "bold"))
-view_btnBACK = Button(view, text = "BACK", width = 10, font = ("arial", 18, "bold"), command = closeview)
+view_DISPLAY = ScrolledText(view, height = 15, width = 40, font = ("times new roman", 15, "bold"))
+view_btnBACK = Button(view, text = "BACK", width=10, font = ("arial", 18, "bold"), command = closeview)
 
 view_DISPLAY.pack(pady = 10)
 view_btnBACK.pack(pady = 10)
@@ -162,7 +311,7 @@ update_lblNAME = Label(update, text = "Enter Name:", font = ('arial', 18, 'bold'
 update_entNAME = Entry(update, bd = 3, font = ("arial", 18, 'bold'))
 update_lblMARKS = Label(update, text = "Enter Marks:", font = ("arial", 18, "bold"))
 update_entMARKS = Entry(update, bd = 3, font = ("arial", 18, "bold"))
-update_btnSAVE = Button(update, text = "SAVE", width = 10, font = ('arial', 18, 'bold'))
+update_btnSAVE = Button(update, text = "SAVE", width = 10, font = ('arial', 18, 'bold'), command = saveupdate)
 update_btnBACK = Button(update, text = "BACK", width = 10, font = ('arial', 18, 'bold'), command = closeupdate)
 
 update_lblRNO.pack(pady = 10)
@@ -182,7 +331,7 @@ delete.title("Update Student")
 
 delete_lblRNO = Label(delete, text = "Enter Roll No.:", font = ('arial', 18, 'bold'))
 delete_entRNO = Entry(delete, bd = 3, font = ('arial', 18, 'bold'))
-delete_btnDELETE = Button(delete, text = "DELETE", width = 10, font = ('arial', 18, 'bold'))
+delete_btnDELETE = Button(delete, text = "DELETE", width = 10, font = ('arial', 18, 'bold'), command = deletedata)
 delete_btnBACK = Button(delete, text = "BACK", width = 10, font = ('arial', 18, 'bold'), command = closedelete)
 
 delete_lblRNO.pack(pady = 10)
