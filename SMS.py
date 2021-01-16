@@ -7,12 +7,9 @@ import re
 # ================================= Button functions =======================================================
 #
 # ========================================= ADD window ======================================
-
-
 def openadd():
     root.withdraw()
     add.deiconify()
-
 
 def saveadd():
     con = None
@@ -59,14 +56,11 @@ def saveadd():
             add_entMARKS.delete(0, END)
             add_entRNO.focus()
 
-
 def closeadd():
     add.withdraw()
     root.deiconify()
 
 # ==================================== VIEW window ======================================
-
-
 def openview():
     root.withdraw()
     view.deiconify()
@@ -90,18 +84,14 @@ def openview():
         if con is not None:
             con.close()
 
-
 def closeview():
     view.withdraw()
     root.deiconify()
 
 # ======================================= UPDATE window ================================
-
-
 def openupdate():
     root.withdraw()
     update.deiconify()
-
 
 def saveupdate():
     con = None
@@ -166,18 +156,14 @@ def saveupdate():
             update_entMARKS.delete(0, END)
             update_entRNO.focus()
 
-
 def closeupdate():
     update.withdraw()
     root.deiconify()
 
 # ================== DELETE window ======================
-
-
 def opendelete():
     root.withdraw()
     delete.deiconify()
-
 
 def deletedata():
     con = None
@@ -221,14 +207,42 @@ def deletedata():
             delete_entRNO.delete(0, END)
             delete_entRNO.focus()
 
-
 def closedelete():
     delete.withdraw()
     root.deiconify()
 
+# ================= Chart ====================================
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def chart():
+    NAME = []
+    MARKS = []
+    con2 = connect("SMS.db")
+    cursor_name = con2.cursor()
+    cursor_marks = con2.cursor()
+    sql_name = "SELECT name from student;"
+    sql_marks = "SELECT marks from student;"
+    cursor_name.execute(sql_name)
+    cursor_marks.execute(sql_marks)
+    con2.commit()
+    data_name = cursor_name.fetchall()
+    for x in data_name:
+        NAME.append(x[0])        
+    data_marks = cursor_marks.fetchall()
+    for x in data_marks:
+        MARKS.append(x[0])
+    NAME_list = [a.split(" ")[0] for a in NAME]
+    plt.figure(figsize = (6,6))
+    plt.bar(NAME_list, MARKS,  color = ['red', 'green', 'brown', 'blue'])
+    plt.xlabel('Students')
+    plt.xticks(rotation = 20)
+    plt.ylabel('Score')
+    plt.title('Bactch Information')
+    plt.show()
+    
+
 # ================= DataBase Creation ========================
-
-
 def createtable():
     con = None
     try:
@@ -243,7 +257,6 @@ def createtable():
         if con is not None:
             con.close()
 
-
 createtable()
 
 # ================= GUI Creation ===============================
@@ -256,7 +269,7 @@ btnADD = Button(root, text = "Add", width = 10, font = ('times new roman', 18, '
 btnVIEW = Button(root, text = "View", width = 10, font = ('times new roman', 18, 'bold'), command = openview)
 btnUPDATE = Button(root, text = "Update", width = 10, font = ('times new roman', 18, 'bold'), command = openupdate)
 btnDELETE = Button(root, text = "Delete", width = 10, font = ('times new roman', 18, 'bold'), command = opendelete)
-btnChart = Button(root, text = "Charts", width = 10, font=('times new roman', 18, 'bold'))
+btnChart = Button(root, text = "Charts", width = 10, font=('times new roman', 18, 'bold'), command = chart)
 
 btnADD.pack(pady = 10)
 btnVIEW.pack(pady = 10)
