@@ -3,6 +3,9 @@ from tkinter import *
 from tkinter.messagebox import *
 from tkinter.scrolledtext import *
 import re
+import bs4
+import requests
+
 
 # ================================= Button functions =======================================================
 #
@@ -211,9 +214,10 @@ def closedelete():
     delete.withdraw()
     root.deiconify()
 
+import matplotlib.pyplot as plt
 # ================= Chart ====================================
 import pandas as pd
-import matplotlib.pyplot as plt
+
 
 def chart():
     NAME = []
@@ -240,8 +244,56 @@ def chart():
     plt.ylabel('Score')
     plt.title('Bactch Information')
     plt.show()
-    
 
+# ================ Location and Temp and Quote ==============================
+def getloc():
+    city = str
+    try:
+        web_add = "https://ipinfo.io/"
+        res1 = requests.get(web_add)
+        data1 = res1.json()
+
+        city = data1['city']
+    except Exception as e:
+        print("Issue", e)
+    finally:
+        return city
+
+def gettemp():
+    temperature = str
+    city = getloc()
+    try:
+        a1 = "http://api.openweathermap.org/data/2.5/weather?units=metric"
+        a2 = "&q=" + city
+        a3 = "&appid=c6e315d09197cec231495138183954bd"
+        web_add = a1 + a2 + a3
+        res2 = requests.get(web_add)
+        data2 = res2.json()
+        
+        main = data2['main']
+        temperature = main['feels_like']
+    except Exception as e:
+        print("Issue",e)
+    finally:
+        return temperature
+
+def getquote():
+    try:
+        web = "https://www.brainyquote.com/quote_of_the_day"
+        res = requests.get(web)
+        data = bs4.BeautifulSoup(res.text, "html.parser")
+        
+        info = data.find('img', {'class': 'p-qotd'})
+        quote = info['alt']
+    except Exception as e:
+        print(e)
+    finally:
+        return quote
+
+
+CITY = getloc()
+TEMP = gettemp()    
+QUOTE = getquote()
 # ================= DataBase Creation ========================
 def createtable():
     con = None
@@ -263,19 +315,23 @@ createtable()
 # ================= Main window ================================
 root = Tk()
 root.title("Student Managemnet System")
-root.geometry("800x500+300+200")
+root.geometry("800x420+300+200")
 
 btnADD = Button(root, text = "Add", width = 10, font = ('times new roman', 18, 'bold'), command = openadd)
 btnVIEW = Button(root, text = "View", width = 10, font = ('times new roman', 18, 'bold'), command = openview)
 btnUPDATE = Button(root, text = "Update", width = 10, font = ('times new roman', 18, 'bold'), command = openupdate)
 btnDELETE = Button(root, text = "Delete", width = 10, font = ('times new roman', 18, 'bold'), command = opendelete)
 btnChart = Button(root, text = "Charts", width = 10, font=('times new roman', 18, 'bold'), command = chart)
+btnADD.pack(pady = 5)
+btnVIEW.pack(pady = 5)
+btnUPDATE.pack(pady = 5)
+btnDELETE.pack(pady = 5)
+btnChart.pack(pady = 5)
 
-btnADD.pack(pady = 10)
-btnVIEW.pack(pady = 10)
-btnUPDATE.pack(pady = 10)
-btnDELETE.pack(pady = 10)
-btnChart.pack(pady = 10)
+lblLOCTEMP = Label(root, text = "Location: {}\t\tTemperature: {}\u00B0C".format(CITY, TEMP), pady = 5, justify = LEFT, font = ('comic sans ms', 20, 'bold'), borderwidth=2, relief="groove")
+lblQUOTE = Label(root, text = "QOTD: {}".format(QUOTE), wraplength=650, pady = 5, justify = LEFT, font = ('comic sans ms', 16, 'bold italic'), borderwidth=2, relief="groove")
+lblLOCTEMP.pack(padx = 10, pady = 10, fill = X)
+lblQUOTE.pack(padx = 10, fill = X)
 
 # ================== Add window ===============================
 add = Toplevel(root)
