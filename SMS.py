@@ -294,6 +294,7 @@ def getquote():
 CITY = getloc()
 TEMP = gettemp()    
 QUOTE = getquote()
+
 # ================= DataBase Creation ========================
 def createtable():
     con = None
@@ -315,37 +316,40 @@ createtable()
 # ================= Main window ================================
 root = Tk()
 root.title("Student Managemnet System")
-root.geometry("800x420+300+200")
+root.geometry("680x400+300+200")
+root['background']='#086A87'
 
-btnADD = Button(root, text = "Add", width = 10, font = ('times new roman', 18, 'bold'), command = openadd)
-btnVIEW = Button(root, text = "View", width = 10, font = ('times new roman', 18, 'bold'), command = openview)
-btnUPDATE = Button(root, text = "Update", width = 10, font = ('times new roman', 18, 'bold'), command = openupdate)
-btnDELETE = Button(root, text = "Delete", width = 10, font = ('times new roman', 18, 'bold'), command = opendelete)
-btnChart = Button(root, text = "Charts", width = 10, font=('times new roman', 18, 'bold'), command = chart)
+btnADD = Button(root, text = "Add", width = 10, font = ('times new roman', 18, 'bold'), bg="#01A9DB", fg="#01DF74", command = openadd)
+btnVIEW = Button(root, text = "View", width = 10, font = ('times new roman', 18, 'bold'), bg="#01A9DB", fg="#01DF74", command = openview)
+btnUPDATE = Button(root, text = "Update", width = 10, font = ('times new roman', 18, 'bold'), bg="#01A9DB", fg="#01DF74", command = openupdate)
+btnDELETE = Button(root, text = "Delete", width = 10, font = ('times new roman', 18, 'bold'), bg="#01A9DB", fg="#01DF74", command = opendelete)
+btnChart = Button(root, text = "Charts", width = 10, font=('times new roman', 18, 'bold'), bg="#01A9DB", fg="#01DF74", command = chart)
 btnADD.pack(pady = 5)
 btnVIEW.pack(pady = 5)
 btnUPDATE.pack(pady = 5)
 btnDELETE.pack(pady = 5)
 btnChart.pack(pady = 5)
 
-lblLOCTEMP = Label(root, text = "Location: {}\t\tTemperature: {}\u00B0C".format(CITY, TEMP), pady = 5, justify = LEFT, font = ('comic sans ms', 20, 'bold'), borderwidth=2, relief="groove")
-lblQUOTE = Label(root, text = "QOTD: {}".format(QUOTE), wraplength=650, pady = 5, justify = LEFT, font = ('comic sans ms', 16, 'bold italic'), borderwidth=2, relief="groove")
+lblLOCTEMP = Label(root, text = "Location: {}\t\tTemperature: {}\u00B0C".format(CITY, TEMP), fg="black", bg="#01DF74", pady = 5, justify = LEFT, font = ('comic sans ms', 20, 'bold'), borderwidth=2, relief="groove")
+lblQUOTE = Label(root, text = "QOTD: {}".format(QUOTE), fg="black", bg="#01DF74", wraplength=650, pady = 5, justify = LEFT, font = ('comic sans ms', 18, 'bold italic'), borderwidth=2, relief="groove")
 lblLOCTEMP.pack(padx = 10, pady = 10, fill = X)
 lblQUOTE.pack(padx = 10, fill = X)
+
 
 # ================== Add window ===============================
 add = Toplevel(root)
 add.geometry("500x450+300+200")
 add.title("Add Student")
+add['background'] = '#AEB404'
 
-add_lblRNO = Label(add, text = "Enter Roll No.:", font = ('arial', 18, 'bold'))
-add_entRNO = Entry(add, bd = 3, font = ('arial', 18, 'bold'))
-add_lblNAME = Label(add, text = "Enter Name:", font = ('arial', 18, 'bold'))
-add_entNAME = Entry(add, bd = 3, font = ("arial", 18, 'bold'))
-add_lblMARKS = Label(add, text = "Enter Marks:", font = ("arial", 18, "bold"))
-add_entMARKS = Entry(add, bd = 3, font = ("arial", 18, "bold"))
-add_btnADD = Button(add, text = "ADD", width = 10, font = ('arial', 18, 'bold'), command = saveadd)
-add_btnBACK = Button(add, text = "BACK", width = 10, font = ('arial', 18, 'bold'), command = closeadd)
+add_lblRNO = Label(add, text = "Enter Roll No.:", font = ('arial black', 18, 'bold'), bg = '#AEB404', fg="black")
+add_entRNO = Entry(add, bd = 3, font = ('arial', 18, 'bold italic'), bg = '#FFBF00')
+add_lblNAME = Label(add, text = "Enter Name:", font = ('arial black', 18, 'bold'), bg = '#AEB404', fg="black")
+add_entNAME = Entry(add, bd = 3, font = ("arial", 18, 'bold italic'), bg = '#FFBF00')
+add_lblMARKS = Label(add, text = "Enter Marks:", font = ("arial black", 18, "bold"), bg = '#AEB404', fg="black")
+add_entMARKS = Entry(add, bd = 3, font = ("arial", 18, "bold italic"), bg = '#FFBF00')
+add_btnADD = Button(add, text = "ADD", width = 10, font = ('arial', 18, 'bold'), fg="white", bg="#FF8000", command = saveadd)
+add_btnBACK = Button(add, text = "BACK", width = 10, font = ('arial', 18, 'bold'), fg="white", bg="#FF8000", command = closeadd)
 
 add_lblRNO.pack(pady = 10)
 add_entRNO.pack(pady = 10)
@@ -361,9 +365,10 @@ add.withdraw()
 view = Toplevel(root)
 view.geometry("650x400+300+200")
 view.title("View Student")
+view['background'] = '#4B088A'
 
-view_DISPLAY = ScrolledText(view, height = 15, width = 40, font = ("times new roman", 15, "bold"))
-view_btnBACK = Button(view, text = "BACK", width=10, font = ("arial", 18, "bold"), command = closeview)
+view_DISPLAY = ScrolledText(view, height = 15, width = 40, font = ("times new roman", 15, "bold"), bg = '#FE2EF7')
+view_btnBACK = Button(view, text = "BACK", width=10, font = ("arial", 18, "bold"), fg = 'white', bg = '#A901DB', command = closeview)
 
 view_DISPLAY.pack(pady = 10)
 view_btnBACK.pack(pady = 10)
@@ -373,15 +378,16 @@ view.withdraw()
 update = Toplevel(root)
 update.geometry("500x450+300+200")
 update.title("Update Student")
+update['background'] = '#4E387E' #dark
 
-update_lblRNO = Label(update, text = "Enter Roll No.:", font = ('arial', 18, 'bold'))
-update_entRNO = Entry(update, bd = 3, font = ('arial', 18, 'bold'))
-update_lblNAME = Label(update, text = "Enter Name:", font = ('arial', 18, 'bold'))
-update_entNAME = Entry(update, bd = 3, font = ("arial", 18, 'bold'))
-update_lblMARKS = Label(update, text = "Enter Marks:", font = ("arial", 18, "bold"))
-update_entMARKS = Entry(update, bd = 3, font = ("arial", 18, "bold"))
-update_btnSAVE = Button(update, text = "SAVE", width = 10, font = ('arial', 18, 'bold'), command = saveupdate)
-update_btnBACK = Button(update, text = "BACK", width = 10, font = ('arial', 18, 'bold'), command = closeupdate)
+update_lblRNO = Label(update, text = "Enter Roll No.:", font = ('arial', 18, 'bold'), bg = '#4E387E', fg="#3EA99F")
+update_entRNO = Entry(update, bd = 3, font = ('arial', 18, 'bold italic'), bg = '#93FFE8')
+update_lblNAME = Label(update, text = "Enter Name:", font = ('arial', 18, 'bold'), bg = '#4E387E', fg="#3EA99F")
+update_entNAME = Entry(update, bd = 3, font = ("arial", 18, 'bold italic'), bg = '#93FFE8')
+update_lblMARKS = Label(update, text = "Enter Marks:", font = ("arial", 18, "bold"), bg = '#4E387E', fg="#3EA99F")
+update_entMARKS = Entry(update, bd = 3, font = ("arial", 18, 'bold italic'), bg = '#93FFE8')
+update_btnSAVE = Button(update, text = "SAVE", width = 10, font = ('arial', 18, 'bold'), fg="white", bg="#7F525D", command = saveupdate)
+update_btnBACK = Button(update, text = "BACK", width = 10, font = ('arial', 18, 'bold'), fg="white", bg="#7F525D", command = closeupdate)
 
 update_lblRNO.pack(pady = 10)
 update_entRNO.pack(pady = 10)
@@ -397,11 +403,12 @@ update.withdraw()
 delete = Toplevel(root)
 delete.geometry("400x230+300+200")
 delete.title("Update Student")
+delete['background'] = '#610B0B'
 
-delete_lblRNO = Label(delete, text = "Enter Roll No.:", font = ('arial', 18, 'bold'))
-delete_entRNO = Entry(delete, bd = 3, font = ('arial', 18, 'bold'))
-delete_btnDELETE = Button(delete, text = "DELETE", width = 10, font = ('arial', 18, 'bold'), command = deletedata)
-delete_btnBACK = Button(delete, text = "BACK", width = 10, font = ('arial', 18, 'bold'), command = closedelete)
+delete_lblRNO = Label(delete, text = "Enter Roll No.:", font = ('arial', 18, 'bold'), bg = '#610B0B', fg = '#DF013A')
+delete_entRNO = Entry(delete, bd = 3, font = ('arial', 18, 'bold'), bg = '#FA5858')
+delete_btnDELETE = Button(delete, text = "DELETE", width = 10, font = ('arial', 18, 'bold'), fg = 'white', bg = '#DF013A', command = deletedata)
+delete_btnBACK = Button(delete, text = "BACK", width = 10, font = ('arial', 18, 'bold'), fg = 'white', bg = '#DF013A', command = closedelete)
 
 delete_lblRNO.pack(pady = 10)
 delete_entRNO.pack(pady = 10)
